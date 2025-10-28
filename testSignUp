@@ -1,0 +1,44 @@
+import msvcrt
+import hashlib  # used for password hashing
+
+
+def input_password(prompt="Enter password: "):
+    """Simple password input that shows * while typing (Windows only)."""
+    print(prompt, end="", flush=True)
+    password = ""
+
+    while True:
+        ch = msvcrt.getch()
+        if ch in {b"\r", b"\n"}:  # Enter key
+            print()
+            break
+        elif ch == b"\x08":  # Backspace
+            if len(password) > 0:
+                password = password[:-1]
+                print("\b \b", end="", flush=True)
+        else:
+            char = ch.decode("utf-8")
+            if char.isprintable():
+                password += char
+                print("*", end="", flush=True)
+
+    return password
+
+
+def encrypt_password(password):
+    """Encrypt (hash) the password using SHA-256."""
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    return hashed
+
+
+# --- Example signup ---
+def signup():
+    print("=== SIGN UP ===")
+    username = input("Enter username: ")
+    password = input_password()
+    encrypted = encrypt_password(password)
+    print(f"\nAccount created for {username}!")
+    print(f"Encrypted password (saved safely): {encrypted}")
+
+
+signup()
